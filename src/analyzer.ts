@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import { DependencyGraph } from './graph';
 
 export interface Rule {
     scope: string; // Regex string to match the file path
@@ -10,10 +12,11 @@ export interface Rule {
  * Analyzes a TextDocument for Clean Architecture violations based on provided rules.
  * Supports TypeScript (import ... from '...') and Dart (import '...').
  */
-export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[]): vscode.Diagnostic[] {
+export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[], graph: DependencyGraph): vscode.Diagnostic[] {
     const diagnostics: vscode.Diagnostic[] = [];
     const fileContent = doc.getText();
     const filePath = doc.fileName;
+    const importsFound: string[] = [];
 
     // 1. Check if the current file falls within any rule's scope
     const applicableRules = rules.filter(rule => new RegExp(rule.scope).test(filePath));
@@ -57,6 +60,12 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[]): vscode
             doc.positionAt(absoluteEnd)
         );
 
+        // Resolve import for graph
+        const resolvedPath = graph.resolveImport(filePath, importPath);
+        if (resolvedPath) {
+            importsFound.push(resolvedPath);
+        }
+
         for (const rule of applicableRules) {
             for (const forbiddenPattern of rule.forbidden) {
                 if (new RegExp(forbiddenPattern).test(importPath)) {
@@ -70,6 +79,24 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[]): vscode
                 }
             }
         }
+    }
+
+    // Update graph and check for cycles
+    graph.update(filePath, importsFound);
+    const cycle = graph.detectCycle(filePath);
+
+    if (cycle.length > 0) {
+        // Create a diagnostic for the cycle
+        // We attach it to the first line of the file for now
+        const range = new vscode.Range(0, 0, 0, 0);
+        const cyclePath = cycle.map(p => path.basename(p)).join(' -> ');
+        const diagnostic = new vscode.Diagnostic(
+            range,
+            `Circular Dependency Detected: ${cyclePath}`,
+            vscode.DiagnosticSeverity.Warning
+        );
+        diagnostic.source = 'ArchSentinel';
+        diagnostics.push(diagnostic);
     }
 
     return diagnostics;

@@ -18,6 +18,16 @@
       {
         "command": "archsentinel.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "archsentinel.showProblems",
+        "title": "Show Architecture Problems"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "arch-rules.json",
+        "url": "./schemas/arch-rules.schema.json"
       }
     ]
   },
