@@ -16,7 +16,7 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[], graph: 
     const diagnostics: vscode.Diagnostic[] = [];
     const fileContent = doc.getText();
     const filePath = doc.fileName;
-    const importsFound: string[] = [];
+    const importsFound: { resolvedPath: string, originalImport: string }[] = [];
 
     // 1. Check if the current file falls within any rule's scope
     const applicableRules = rules.filter(rule => new RegExp(rule.scope).test(filePath));
@@ -62,9 +62,6 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[], graph: 
 
         // Resolve import for graph
         const resolvedPath = graph.resolveImport(filePath, importPath);
-        if (resolvedPath) {
-            importsFound.push(resolvedPath);
-        }
 
         for (const rule of applicableRules) {
             for (const forbiddenPattern of rule.forbidden) {
@@ -78,6 +75,10 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[], graph: 
                     diagnostics.push(diagnostic);
                 }
             }
+        }
+
+        if (resolvedPath) {
+            importsFound.push({ resolvedPath: resolvedPath, originalImport: importPath });
         }
     }
 

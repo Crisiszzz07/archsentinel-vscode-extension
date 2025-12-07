@@ -22,6 +22,10 @@
       {
         "command": "archsentinel.showProblems",
         "title": "Show Architecture Problems"
+      },
+      {
+        "command": "archsentinel.showGraph",
+        "title": "ArchSentinel: Show Architecture Graph"
       }
     ],
     "jsonValidation": [

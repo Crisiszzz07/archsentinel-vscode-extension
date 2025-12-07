@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { analyzeDocument, Rule } from './analyzer';
 import { DependencyGraph } from './graph';
 import { ArchStatusBar } from './ui/statusBar';
+import { GraphPanel } from './panels/GraphPanel';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -27,6 +28,32 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('archsentinel.showProblems', () => {
 			vscode.commands.executeCommand('workbench.action.problems.focus');
+		})
+	);
+
+	// Register Command to Show Graph
+	context.subscriptions.push(
+		vscode.commands.registerCommand('archsentinel.showGraph', () => {
+			const workspaceFolders = vscode.workspace.workspaceFolders;
+			if (!workspaceFolders) return;
+
+			const rootPath = workspaceFolders[0].uri.fsPath;
+			const configPath = path.join(rootPath, 'arch-rules.json');
+			let rules: Rule[] = [];
+
+			if (fs.existsSync(configPath)) {
+				try {
+					const configContent = fs.readFileSync(configPath, 'utf-8');
+					const config = JSON.parse(configContent);
+					if (config && config.rules) {
+						rules = config.rules;
+					}
+				} catch (error) {
+					console.error('Error reading arch-rules.json for graph:', error);
+				}
+			}
+
+			GraphPanel.createOrShow(context.extensionUri, graph, rules);
 		})
 	);
 
