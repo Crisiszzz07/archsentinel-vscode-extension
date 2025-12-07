@@ -2,6 +2,7 @@
   "name": "archsentinel",
   "displayName": "ArchSentinel",
   "description": "Visualize dependencies, detect cycles, and protect your software architecture in real time.",
+  "icon": "icon.png",
   "keywords": [
     "architecture",
     "clean architecture",
