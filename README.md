@@ -8,7 +8,7 @@
   <br />
   Visualize dependencies, detect cycles, and enforce architectural boundaries in real-time.
 
-  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/version-4.0.0-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
   <img src="https://img.shields.io/badge/VS%20Code-Extension-007ACC.svg" alt="VS Code" />
 </div>
