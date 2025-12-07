@@ -1,7 +1,16 @@
 {
   "name": "archsentinel",
   "displayName": "ArchSentinel",
-  "description": "Clean Architecture Linter",
+  "description": "Visualize dependencies, detect cycles, and protect your software architecture in real time.",
+  "keywords": [
+    "architecture",
+    "clean architecture",
+    "visualization",
+    "graph",
+    "linter",
+    "typescript",
+    "dart"
+  ],
   "version": "0.0.2",
   "publisher": "Crisiszzz07-dev",
   "license": "MIT",
