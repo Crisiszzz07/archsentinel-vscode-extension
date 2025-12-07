@@ -3,6 +3,7 @@ import { analyzeDocument, Rule } from './analyzer';
 import { DependencyGraph } from './graph';
 import { ArchStatusBar } from './ui/statusBar';
 import { GraphPanel } from './panels/GraphPanel';
+import { ArchSentinelFixProvider } from './quickFix';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -55,6 +56,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 			GraphPanel.createOrShow(context.extensionUri, graph, rules);
 		})
+	);
+
+	// Register Quick Fix Provider
+	context.subscriptions.push(
+		vscode.languages.registerCodeActionsProvider(
+			['typescript', 'typescriptreact', 'dart'],
+			new ArchSentinelFixProvider(),
+			{
+				providedCodeActionKinds: ArchSentinelFixProvider.providedCodeActionKinds
+			}
+		)
 	);
 
 	// 2. Escuchar cuando se guarda un archivo
