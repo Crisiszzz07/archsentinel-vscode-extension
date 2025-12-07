@@ -3,6 +3,11 @@
   "displayName": "ArchSentinel",
   "description": "Clean Architecture Linter",
   "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Crisiszzz07/archsentinel-vscode-extension.git"
+  },
   "engines": {
     "vscode": "^1.104.0"
   },

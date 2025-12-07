@@ -1,71 +1,127 @@
-# archsentinel README
+# ArchSentinel 🛡️
 
-This is the README for your extension "archsentinel". After writing up a brief description, we recommend including the following sections.
+<div align="center">
+  <img src="icon.png" alt="ArchSentinel Logo" width="128" />
+  <br />
+  
+  **The Guardian of Your Clean Architecture.**
+  <br />
+  Visualize dependencies, detect cycles, and enforce architectural boundaries in real-time.
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
+  <img src="https://img.shields.io/badge/VS%20Code-Extension-007ACC.svg" alt="VS Code" />
+</div>
 
 ---
 
-## Following extension guidelines
+## 🚀 Overview
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+**ArchSentinel** is a static analysis tool designed for teams who care about **Software Architecture**. It goes beyond simple linting by modeling your project as a directed graph to detect structural anomalies.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+Whether you follow **Clean Architecture**, **Hexagonal**, or **Onion Architecture**, ArchSentinel ensures your dependency rules are respected, preventing "Spaghetti Code" before it happens.
 
-## Working with Markdown
+## ✨ Key Features
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+### 1. 🏗️ Boundary Enforcement
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+Define strict rules in a simple JSON file. If your **Domain Layer** tries to import the **Infrastructure Layer**, ArchSentinel will flag it immediately inside the editor.
 
-## For more information
+- **Real-time feedback:** Red squiggles on forbidden imports.
+- **Language Support:** TypeScript (`.ts`, `.tsx`) and Dart/Flutter (`.dart`).
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+### 2. 🕸️ Interactive Architecture Graph
 
-**Enjoy!**
+Visualize your project's health with a physics-based graph.
+
+- **Command:** `ArchSentinel: Show Architecture Graph`
+- **Visual Feedback:** - 🔴 **Red Thick Lines:** Forbidden dependencies.
+  - 🟡 **Yellow Lines:** Suppressed/Ignored violations.
+  - ⚪ **Gray Dashed Lines:** Healthy connections.
+
+### 3. 📐 Scientific Metrics (Instability)
+
+We calculate **Robert C. Martin's Instability Metric (I)** for every file:
+$$I = \frac{FanOut}{FanIn + FanOut}$$
+
+- **Green Nodes (0-0.3):** Stable components (e.g., Domain entities).
+- **Orange Nodes (0.7-1):** Volatile components (e.g., UI, Scripts).
+
+### 4. 🔄 Circular Dependency Detection
+
+Detects dangerous cycles (e.g., `A -> B -> C -> A`) that cause runtime errors and infinite loops. The extension warns you about these structural deadlocks instantly.
+
+### 5. 🛠️ Developer Experience (DX)
+
+- **JSON Schema:** Autocomplete and validation for your `arch-rules.json`.
+- **Quick Fixes:** One-click actions to ignore specific violations using `// arch-ignore`.
+
+---
+
+## 📸 Screenshots
+
+| Architecture Visualization | Real-time Linting |
+|:---:|:---:|
+| ![Graph View](images/graph.png) | ![Linting Error](images/linting.png) |
+
+---
+
+## ⚙️ Configuration
+
+Create a file named `arch-rules.json` in the root of your workspace.
+
+**Example for Clean Architecture:**
+
+```json
+{
+  "rules": [
+    {
+      "scope": "src/domain",
+      "forbidden": ["src/infrastructure", "src/ui", "react", "flutter"],
+      "message": "❌ The Domain layer must remain pure and independent."
+    },
+    {
+      "scope": "src/application",
+      "forbidden": ["src/ui", "src/infrastructure/web"],
+      "message": "⚠️ Application layer should not depend on UI details."
+    }
+  ]
+}
+````
+
+## 🛡️ Suppressing Rules
+
+Sometimes you need to break the rules temporarily (e.g., legacy code or rapid prototyping). You can suppress a violation by adding a comment on the line before the import:
+
+```typescript
+// arch-ignore
+import { Database } from '../infrastructure/db'; 
+```
+
+This will turn the error into a warning and change the edge color in the graph to **Yellow**.
+
+---
+
+## 📦 Installation
+
+1. Open **VS Code**.
+2. Go to the **Extensions** view (`Ctrl+Shift+X`).
+3. Search for **"ArchSentinel"**.
+4. Click **Install**.
+5. Reload VS Code to activate.
+
+---
+
+## 🤝 Contributing
+
+We believe in open source\! If you want to add support for Python, Java, or improve the graph visualization:
+
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+## 📝 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
