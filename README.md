@@ -1,7 +1,7 @@
 # ArchSentinel 🛡️
 
 <div align="center">
-  <img src="icon.png" alt="ArchSentinel Logo" width="128" />
+  <img src="https://github.com/Crisiszzz07/archsentinel-vscode-extension/blob/cabd1684e2ec7cdf3257e539cbff88609008f8aa/icon.png" alt="ArchSentinel Logo" width="128" />
   <br />
   
   **The Guardian of Your Clean Architecture.**
@@ -62,7 +62,7 @@ Detects dangerous cycles (e.g., `A -> B -> C -> A`) that cause runtime errors an
 
 | Architecture Visualization | Real-time Linting |
 |:---:|:---:|
-| ![Graph View](images/graph.png) | ![Linting Error](images/linting.png) |
+| ![Graph View](https://github.com/Crisiszzz07/archsentinel-vscode-extension/blob/cabd1684e2ec7cdf3257e539cbff88609008f8aa/images/graph.png) | ![Linting Error](https://github.com/Crisiszzz07/archsentinel-vscode-extension/blob/cabd1684e2ec7cdf3257e539cbff88609008f8aa/images/linting.png) |
 
 ---
 

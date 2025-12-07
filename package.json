@@ -2,7 +2,8 @@
   "name": "archsentinel",
   "displayName": "ArchSentinel",
   "description": "Clean Architecture Linter",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "publisher": "Crisiszzz07-dev",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,7 +13,8 @@
     "vscode": "^1.104.0"
   },
   "categories": [
-    "Other"
+    "Linters",
+    "Visualization"
   ],
   "activationEvents": [
     "*"
@@ -49,7 +51,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.106.1",
+    "@types/vscode": "^1.104.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "typescript-eslint": "^8.48.1",
