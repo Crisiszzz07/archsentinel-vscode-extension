@@ -16,7 +16,7 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[], graph: 
     const diagnostics: vscode.Diagnostic[] = [];
     const fileContent = doc.getText();
     const filePath = doc.fileName;
-    const importsFound: { resolvedPath: string, originalImport: string }[] = [];
+    const importsFound: { resolvedPath: string, originalImport: string, isIgnored: boolean }[] = [];
 
     // 1. Check if the current file falls within any rule's scope
     const applicableRules = rules.filter(rule => new RegExp(rule.scope).test(filePath));
@@ -60,25 +60,37 @@ export function analyzeDocument(doc: vscode.TextDocument, rules: Rule[], graph: 
             doc.positionAt(absoluteEnd)
         );
 
+        // Check for suppression comment on previous line
+        const startPos = doc.positionAt(start);
+        let isIgnored = false;
+        if (startPos.line > 0) {
+            const prevLine = doc.lineAt(startPos.line - 1);
+            if (prevLine.text.trim().includes('// arch-ignore')) {
+                isIgnored = true;
+            }
+        }
+
         // Resolve import for graph
         const resolvedPath = graph.resolveImport(filePath, importPath);
 
         for (const rule of applicableRules) {
             for (const forbiddenPattern of rule.forbidden) {
                 if (new RegExp(forbiddenPattern).test(importPath)) {
-                    const diagnostic = new vscode.Diagnostic(
-                        range,
-                        `${rule.message} (Forbidden import: ${importPath})`,
-                        vscode.DiagnosticSeverity.Error
-                    );
-                    diagnostic.source = 'ArchSentinel';
-                    diagnostics.push(diagnostic);
+                    if (!isIgnored) {
+                        const diagnostic = new vscode.Diagnostic(
+                            range,
+                            `${rule.message} (Forbidden import: ${importPath})`,
+                            vscode.DiagnosticSeverity.Error
+                        );
+                        diagnostic.source = 'ArchSentinel';
+                        diagnostics.push(diagnostic);
+                    }
                 }
             }
         }
 
         if (resolvedPath) {
-            importsFound.push({ resolvedPath: resolvedPath, originalImport: importPath });
+            importsFound.push({ resolvedPath: resolvedPath, originalImport: importPath, isIgnored: isIgnored });
         }
     }
 
