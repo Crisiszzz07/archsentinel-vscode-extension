@@ -12,7 +12,7 @@
     "typescript",
     "dart"
   ],
-  "version": "0.0.4",
+  "version": "1.0.0",
   "publisher": "Crisiszzz07-dev",
   "license": "MIT",
   "repository": {
@@ -43,6 +43,10 @@
       {
         "command": "archsentinel.showGraph",
         "title": "ArchSentinel: Show Architecture Graph"
+      },
+      {
+        "command": "archsentinel.init",
+        "title": "ArchSentinel: Init / Auto-Detect"
       }
     ],
     "jsonValidation": [

@@ -1,7 +1,15 @@
+//CHECK COLORS FOR FUTURE USES AND UPDATES
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Rule } from './analyzer';
+
+/**
+ * Helper to normalize paths to use forward slashes (OS Agnostic).
+ */
+function normalize(p: string): string {
+    return p.split(path.sep).join('/');
+}
 
 export class DependencyGraph {
     // Store resolved path AND original import string to re-check rules later
@@ -15,18 +23,19 @@ export class DependencyGraph {
      * @param imports A list of imports (resolved path + original string + ignored status).
      */
     public update(filePath: string, imports: { resolvedPath: string, originalImport: string, isIgnored: boolean }[]) {
-        this.adjacencyList.set(filePath, imports);
+        this.adjacencyList.set(normalize(filePath), imports);
     }
 
     /**
      * Detects cycles in the graph involving the given file.
      */
     public detectCycle(startNode: string): string[] {
+        const normalizedStart = normalize(startNode);
         const visited = new Set<string>();
         const recursionStack = new Set<string>();
         const pathStack: string[] = [];
 
-        if (this.dfs(startNode, visited, recursionStack, pathStack)) {
+        if (this.dfs(normalizedStart, visited, recursionStack, pathStack)) {
             return pathStack;
         }
 
@@ -120,8 +129,8 @@ export class DependencyGraph {
                 // Add Target Node (if not already added as a source)
                 if (!addedNodes.has(imp.resolvedPath)) {
                     // For external/leaf nodes that are not in adjacencyList keys, 
-                    // we might not have full info, but we know Ca >= 1 (since 'file' imports it).
-                    // We treat them as having Ce=0 if we haven't analyzed them.
+                    // might not have full info, but we know Ca >= 1 (since  File imports it)
+                    // treat them as having Ce=0 if theyre not analyzed yet.
                     const ce = 0;
                     const ca = fanInMap.get(imp.resolvedPath) || 0;
                     const total = ca + ce;
@@ -193,22 +202,49 @@ export class DependencyGraph {
      * Resolves an import path to an absolute file path.
      */
     public resolveImport(currentFile: string, importPath: string): string | null {
+        // Normalize current file path to ensure consistency
+        // But we need the directory for resolution, so we use path.dirname on the OS specific path first if needed
+        // Actually, path.dirname works on strings.
+        // Let's assume currentFile is absolute. !!
+
+        const currentDir = path.dirname(currentFile);
+
         if (importPath.startsWith('.')) {
-            const resolved = path.resolve(path.dirname(currentFile), importPath);
+            // Relative path: Resolve against current file directory
+            const resolved = path.resolve(currentDir, importPath);
+
+            // 1. Check if file exists exactly as imported (e.g. user.dart)
+            if (fs.existsSync(resolved) && fs.lstatSync(resolved).isFile()) {
+                return normalize(resolved);
+            }
+
+            // 2. Try extensions
             const extensions = ['.ts', '.tsx', '.dart', '.js', '.jsx'];
             for (const ext of extensions) {
                 if (fs.existsSync(resolved + ext)) {
-                    return resolved + ext;
+                    return normalize(resolved + ext);
                 }
             }
+
+            // Try directory index
             if (fs.existsSync(resolved) && fs.lstatSync(resolved).isDirectory()) {
                 for (const ext of extensions) {
                     if (fs.existsSync(path.join(resolved, 'index' + ext))) {
-                        return path.join(resolved, 'index' + ext);
+                        return normalize(path.join(resolved, 'index' + ext));
                     }
                 }
             }
+        } else {
+            // Absolute path or Package import
+            // If it's an absolute path (unlikely in imports but possible)
+            if (path.isAbsolute(importPath)) {
+                if (fs.existsSync(importPath)) {
+                    return normalize(importPath);
+                }
+            }
+            
         }
+
         return null;
     }
 }

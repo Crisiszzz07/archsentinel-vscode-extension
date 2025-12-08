@@ -131,9 +131,58 @@ export class GraphPanel {
                     },
                     layout: {
                         improvedLayout: true
+                    },
+                    interaction: {
+                        hover: true
                     }
                 };
                 const network = new vis.Network(container, data, options);
+
+                // --- Impact Analysis Interaction ---
+                network.on("click", function (params) {
+                    if (params.nodes.length > 0) {
+                        // Node clicked
+                        const clickedNodeId = params.nodes[0];
+                        const connectedNodes = network.getConnectedNodes(clickedNodeId);
+                        const allConnected = [clickedNodeId, ...connectedNodes];
+
+                        // Update Nodes
+                        const updateNodes = [];
+                        nodes.forEach((node) => {
+                            if (allConnected.includes(node.id)) {
+                                updateNodes.push({ id: node.id, opacity: 1.0, font: { color: '#ffffff' } }); // Highlight
+                            } else {
+                                updateNodes.push({ id: node.id, opacity: 0.1, font: { color: 'rgba(255,255,255,0.1)' } }); // Dim
+                            }
+                        });
+                        nodes.update(updateNodes);
+
+                        // Update Edges
+                        const updateEdges = [];
+                        edges.forEach((edge) => {
+                            if (allConnected.includes(edge.from) && allConnected.includes(edge.to)) {
+                                updateEdges.push({ id: edge.id, opacity: 1.0 }); // Highlight
+                            } else {
+                                updateEdges.push({ id: edge.id, opacity: 0.1 }); // Dim
+                            }
+                        });
+                        edges.update(updateEdges);
+
+                    } else {
+                        // Background clicked (Reset)
+                        const updateNodes = [];
+                        nodes.forEach((node) => {
+                            updateNodes.push({ id: node.id, opacity: 1.0, font: { color: '#ffffff' } });
+                        });
+                        nodes.update(updateNodes);
+
+                        const updateEdges = [];
+                        edges.forEach((edge) => {
+                            updateEdges.push({ id: edge.id, opacity: 1.0 });
+                        });
+                        edges.update(updateEdges);
+                    }
+                });
             </script>
         </body>
         </html>`;

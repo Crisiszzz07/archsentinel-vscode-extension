@@ -6,6 +6,7 @@ import { GraphPanel } from './panels/GraphPanel';
 import { ArchSentinelFixProvider } from './quickFix';
 import * as path from 'path';
 import * as fs from 'fs';
+import { generateConfig } from './commands/autoInit';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 let graph: DependencyGraph;
@@ -55,6 +56,13 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			GraphPanel.createOrShow(context.extensionUri, graph, rules);
+		})
+	);
+
+	// Register Command to Init / Auto-Detect
+	context.subscriptions.push(
+		vscode.commands.registerCommand('archsentinel.init', () => {
+			generateConfig();
 		})
 	);
 
@@ -109,7 +117,7 @@ function runAnalysis(document: vscode.TextDocument) {
 			const config = JSON.parse(configContent);
 
 			if (config && config.rules) {
-				// LLAMADA A TU LÓGICA (analyzer.ts)
+				// LLAMADA A LÓGICA (analyzer.ts)
 				const diagnostics = analyzeDocument(document, config.rules, graph);
 
 				// Pintar los errores en VS Code
@@ -117,15 +125,15 @@ function runAnalysis(document: vscode.TextDocument) {
 
 				// Update Status Bar
 				// Note: This only updates based on the current document's diagnostics. 
-				// Ideally, we should aggregate diagnostics from the collection.
-				// For MVP, let's just use the current document's diagnostics.
+				// Ideally, it should aggregate diagnostics from the collection. !!!!!
+				// For MVP let's just use the current document's diagnostics.
 				statusBar.update(diagnostics);
 			}
 		} catch (error) {
 			console.error('Error reading arch-rules.json:', error);
 		}
 	} else {
-		// Si no hay archivo de reglas, limpiamos los errores previos
+		// Si no hay archivo de reglas, limpiamos los errores previos (eng: if there are no rules' file, clean previous issues)
 		diagnosticCollection.clear();
 	}
 }
